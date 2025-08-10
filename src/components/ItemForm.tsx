@@ -11,7 +11,7 @@ interface ItemFormProps {
 const categories = ['Accounts', 'Gift Cards', 'Services', 'Subscriptions', 'Keys', 'Coaching'];
 
 export const ItemForm: React.FC<ItemFormProps> = ({ item, onClose }) => {
-  const { addItem, updateItem } = useItems();
+  const { addItem, updateItem, error } = useItems();
   const [formData, setFormData] = useState<ItemFormData>({
     title: '',
     price: 0,
@@ -21,6 +21,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ item, onClose }) => {
     inStock: true
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (item) {
@@ -38,18 +39,20 @@ export const ItemForm: React.FC<ItemFormProps> = ({ item, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
 
-    // Simulate loading delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    if (item) {
-      updateItem(item.id, formData);
-    } else {
-      addItem(formData);
+    try {
+      if (item) {
+        await updateItem(item.id, formData);
+      } else {
+        await addItem(formData);
+      }
+      onClose();
+    } catch (err) {
+      setSubmitError('Failed to save item. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
-    onClose();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -207,6 +210,12 @@ export const ItemForm: React.FC<ItemFormProps> = ({ item, onClose }) => {
               className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none disabled:opacity-50"
             />
           </div>
+
+          {(submitError || error) && (
+            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+              {submitError || error}
+            </div>
+          )}
 
           <div className="flex gap-4 pt-4">
             <button

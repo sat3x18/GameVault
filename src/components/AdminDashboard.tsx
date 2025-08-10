@@ -7,7 +7,7 @@ import { GameItem } from '../types';
 
 export const AdminDashboard: React.FC = () => {
   const { logout } = useAuth();
-  const { items, deleteItem } = useItems();
+  const { items, deleteItem, loading, error, refreshItems } = useItems();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<GameItem | null>(null);
 
@@ -18,7 +18,9 @@ export const AdminDashboard: React.FC = () => {
 
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
-      deleteItem(id);
+      deleteItem(id).catch(err => {
+        console.error('Failed to delete item:', err);
+      });
     }
   };
 
@@ -29,6 +31,17 @@ export const AdminDashboard: React.FC = () => {
 
   const inStockItems = items.filter(item => item.inStock);
   const totalValue = items.reduce((sum, item) => sum + item.price, 0);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white">Loading items...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -56,6 +69,13 @@ export const AdminDashboard: React.FC = () => {
               >
                 <LogOut className="w-4 h-4" />
                 Logout
+              </button>
+              
+              <button
+                onClick={refreshItems}
+                className="px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white font-medium rounded-lg transition-all duration-200"
+              >
+                Refresh
               </button>
             </div>
           </div>
@@ -103,6 +123,12 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Items Table */}
+        {error && (
+          <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <p className="text-amber-400 text-sm">{error}</p>
+          </div>
+        )}
+        
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden">
           <div className="p-6 border-b border-gray-700">
             <h2 className="text-xl font-bold text-white">All Items</h2>
