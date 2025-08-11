@@ -18,9 +18,9 @@ export const AdminLogin: React.FC = () => {
     // Simulate loading delay
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    const success = login(username, password);
+    const success = await login(username, password);
     if (!success) {
-      setError('Invalid username or password');
+      setError('Invalid username or password, or authentication service unavailable');
     }
     setIsLoading(false);
   };

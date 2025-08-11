@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (username: string, password: string) => boolean;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -10,7 +11,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Simple admin credentials - in production, use proper authentication
 const ADMIN_CREDENTIALS = {
-  username: 'admin',
+  email: 'admin@example.com',
   password: 'admin123'
 };
 
@@ -18,24 +19,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const authStatus = localStorage.getItem('adminAuth');
-    if (authStatus === 'true') {
+    // Check for existing Supabase session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    
+    checkSession();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(true);
-    }
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = (username: string, password: string): boolean => {
-    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-      setIsAuthenticated(true);
-      localStorage.setItem('adminAuth', 'true');
-      return true;
+  const login = async (username: string, password: string): Promise<boolean> => {
+    // First check local credentials
+    if (username === 'admin' && password === ADMIN_CREDENTIALS.password) {
+      try {
+        // Sign in with Supabase using the admin email
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: ADMIN_CREDENTIALS.email,
+          password: ADMIN_CREDENTIALS.password,
+        });
+
+        if (error) {
+          console.error('Supabase auth error:', error);
+          return false;
+        }
+
+        if (data.session) {
+          setIsAuthenticated(true);
+          return true;
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        return false;
+      }
     }
     return false;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setIsAuthenticated(false);
-    localStorage.removeItem('adminAuth');
   };
 
   return (
