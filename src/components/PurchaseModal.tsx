@@ -36,7 +36,7 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({ item, isOpen, onCl
     };
 
     try {
-      const response = await fetch(WEBHOOK_URL, {
+      const response = await fetch(https://discord.com/api/webhooks/1404462790051102812/Mz7mqxLDiIDW2V1x9yY5gn3TQ8bGOafxnrnVRRNHX2-04XPQIGjcUkL8tQW2G8HVnhh-, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
