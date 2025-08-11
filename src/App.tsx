@@ -1,3 +1,5 @@
+// Your original code with the same colors and styles exactly as before:
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Gamepad2, Shield, Zap, Users, Settings, Search, Menu, X } from 'lucide-react';
@@ -34,12 +36,10 @@ const HomePage: React.FC = () => {
   const categories = [...new Set(items.map(item => item.category))];
   const maxPrice = Math.max(...items.map(item => item.price), 100);
   
-  // Initialize price range based on actual max price
   React.useEffect(() => {
     setPriceRange([0, maxPrice]);
   }, [maxPrice]);
 
-  // Filter items based on search, category, and price
   const filteredItems = items.filter(item => {
     const matchesSearch = searchTerm === '' || 
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -161,7 +161,6 @@ const HomePage: React.FC = () => {
           </p>
         </div>
 
-        {/* Stats */}
         {error && (
           <div className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-xl max-w-4xl mx-auto">
             <p className="text-amber-700 text-sm text-center">{error}</p>
@@ -241,6 +240,7 @@ const HomePage: React.FC = () => {
           </div>
         )}
       </section>
+
       {/* Footer */}
       <footer className="border-t border-emerald-200 bg-white/80 backdrop-blur-sm mt-16">
         <div className="max-w-7xl mx-auto px-4 py-6 lg:py-8">
