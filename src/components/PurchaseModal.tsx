@@ -9,7 +9,7 @@ interface PurchaseModalProps {
 }
 
 // Replace this with your actual Discord webhook URL
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN';
+const WEBHOOK_URL = 'https://discord.com/api/webhooks/1404462790051102812/Mz7mqxLDiIDW2V1x9yY5gn3TQ8bGOafxnrnVRRNHX2-04XPQIGjcUkL8tQW2G8HVnhh-';
 
 export const PurchaseModal: React.FC<PurchaseModalProps> = ({ item, isOpen, onClose }) => {
   const [discordUsername, setDiscordUsername] = useState('');
@@ -36,7 +36,7 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({ item, isOpen, onCl
     };
 
     try {
-      const response = await fetch(https://discord.com/api/webhooks/1404462790051102812/Mz7mqxLDiIDW2V1x9yY5gn3TQ8bGOafxnrnVRRNHX2-04XPQIGjcUkL8tQW2G8HVnhh-, {
+      const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
