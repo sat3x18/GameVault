@@ -40,6 +40,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // First check local credentials
     if (username === 'admin' && password === ADMIN_CREDENTIALS.password) {
       try {
+        // First try to sign up the user if they don't exist
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: ADMIN_CREDENTIALS.email,
+          password: ADMIN_CREDENTIALS.password,
+        });
+        
+        // Ignore error if user already exists
+        if (signUpError && !signUpError.message.includes('already registered')) {
+          console.error('Sign up error:', signUpError);
+        }
+
         // Sign in with Supabase using the admin email
         const { data, error } = await supabase.auth.signInWithPassword({
           email: ADMIN_CREDENTIALS.email,
